@@ -44,11 +44,28 @@ else
     {
         try
         {
-            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("/api/WeatherForecast") ?? new WeatherForecast[]{};
+            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast") ?? new WeatherForecast[]{};
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
         }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (forecasts == null)
+        {
+            forecasts = Http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast").Result!;
+            if (forecasts == null)
+            {
+                Console.WriteLine("No data");
+                Console.WriteLine(Http.BaseAddress);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Data loaded");
+        };
     }
 }
